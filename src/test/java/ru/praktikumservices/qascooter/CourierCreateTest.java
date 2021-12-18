@@ -42,6 +42,22 @@ public class CourierCreateTest {
     }
 
     @Test
+    @DisplayName("Courier creation without name: /api/v1/courier")
+    @Description("Creation of a courier with valid data: login and password, without a name")
+    public void courierCanBeCreatedWithLoginAndPassword() {
+        courier = Courier.getWithLoginAndPassword();
+
+        ValidatableResponse courierCreateResponse = courierClient.create(courier);
+        ValidatableResponse courierLoginResponse = courierClient.login(CourierCredentials.from(courier));
+
+        courierId = courierLoginResponse.extract().path("id");
+
+        courierCreateResponse.statusCode(201);
+        courierCreateResponse.extract().path("ok");
+        assertThat("Courier ID is incorrect", courierId, is(not(0)));
+    }
+
+    @Test
     @DisplayName("Creation of two identical couriers: /api/v1/courier")
     @Description("You cannot create two identical couriers")
     public void cannotCreateTwoIdenticalCouriers() {

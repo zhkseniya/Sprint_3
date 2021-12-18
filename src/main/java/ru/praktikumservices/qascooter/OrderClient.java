@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.given;
 public class OrderClient extends RestAssuredClient {
 
     private static final String ORDER_PATH = "/api/v1/orders/";
-    private static final String GET_ORDER_PATH = "/v1/orders/track?t=";
+    private static final String GET_ORDER_PATH = "/v1/orders/";
 
     @Step("Send POST request to /api/v1/orders")
     public ValidatableResponse create(Order order) {
@@ -25,8 +25,10 @@ public class OrderClient extends RestAssuredClient {
     public ValidatableResponse getOrder(int trackId) {
         return given()
                 .spec(getBaseSpec())
+                .with()
+                .queryParam("t", trackId)
                 .when()
-                .post(GET_ORDER_PATH + trackId)
+                .post(GET_ORDER_PATH + "track/")
                 .then()
                 .assertThat();
     }

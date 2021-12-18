@@ -15,12 +15,13 @@ import static org.hamcrest.Matchers.notNullValue;
 public class OrderParameterizedTest {
 
     private static OrderClient orderClient = new OrderClient();
-    private static Order order;
+    private Order order;
+    private List<ScooterColor> color;
     private int trackId;
     private final int expectedStatus;
 
-    public OrderParameterizedTest(Order order, int expectedStatus) {
-        this.order = order;
+    public OrderParameterizedTest(List<ScooterColor> color, int expectedStatus) {
+        this.color = color;
         this.expectedStatus = expectedStatus;
     }
 
@@ -32,9 +33,9 @@ public class OrderParameterizedTest {
     @Parameterized.Parameters
     public static Object[][] getOrderData() {
         return new Object[][] {
-                {Order.getOrder(List.of(ScooterColor.BLACK, ScooterColor.GREY)), 201},
-                {Order.getOrder(List.of(ScooterColor.BLACK)), 201},
-                {Order.getOrder(List.of()), 201},
+                {List.of(ScooterColor.BLACK, ScooterColor.GREY), 201},
+                {List.of(ScooterColor.BLACK), 201},
+                {List.of(), 201},
         };
     }
 
@@ -42,6 +43,9 @@ public class OrderParameterizedTest {
     @DisplayName("Creating an order with a different set of colors: /api/v1/orders")
     @Description("Creation of an order with two colors; with only one color; without color ")
     public void orderCanBeCreated() {
+
+        order = Order.getOrder(color);
+
         ValidatableResponse response = orderClient.create(order);
         response.assertThat().statusCode(expectedStatus);
         trackId = response.extract().path("track");
